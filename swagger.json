@@ -1,0 +1,555 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "MasterPlat API",
+        "description": "A simple API to Document MasterPlat Functions"
+    },
+    "tags": [
+        {
+          "name": "Dataproviders",
+          "description": "Everything about DataProviders"
+         
+        },
+        {
+            "name":"Thesis",
+            "description":"Everything about Thesis"
+
+        },
+        {
+            "name":"Logs",
+            "description":"Everything about logs"
+        }
+    ],
+    "schemes": [
+        "https"
+    ],
+    "host":"masterplat.herokuapp.com",
+    "basePath": "/api/v1",
+    "paths": {  
+        "/dataproviders": {
+            "get": {
+                "tags":["Dataproviders"],
+                "summary": "Gets All Data Providers",
+                "description": "Returns a list containing all Providers.",
+                "parameters":[
+                    {
+                        "in":"query",
+                        "name":"skip",
+                        "schema":{
+                            "type": "integer",
+                             "minimum": 0,
+                             "default": 0
+                        },
+                        "required":false,
+                        "description":"The number of items to skip before starting to collect the result set"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100,
+                          "default": 20
+                        },
+                        "required": false,
+                        "description": "The number of items to return."
+                      },      
+                    {
+                        "in":"query",
+                        "name":"sort",
+                        "schema":{
+                            "type": "string",
+                            "default": "null"
+                        },
+                        "required":false,
+                        "description":"The name of the fields to sort data"
+                    },
+                    {
+                        "in": "query",
+                        "name": "fields",
+                        "description": "It lets you filtering the Providers by fields (field1, field2, ...)",
+                        "type": "string"
+                    }
+                   
+                ],
+                "responses": {
+                    "200": {
+                        "description":"Successful Operation",                        
+                        "schema": {
+                           "$ref":"#/components/schemas/Provider"
+                    }
+                },
+                    "500":{
+                        "description":"There was an internal error listing all the providers"
+                    }
+                }
+            },
+            "post":{
+                "tags":["Dataproviders"],
+                "summary": "Post a data provider",
+                "description": "Insert a data provider into database.",
+                "parameters":[
+
+                    {
+                        "in":"body",
+                        "name":"body",
+                        "description":"Provider Object that needs to be added",
+                        "required":true,
+                        "content":"application/json",
+                        "schema":{
+                           
+                            "$ref":"#/components/schemas/Provider"
+                        }
+                    } 
+                ],
+
+                "responses": {
+                    "200": {
+                        "description":"Successful Operation",                        
+                        "schema": {
+                            "$ref":"#/components/schemas/Provider"
+                        }
+                    },
+                    "400":{
+                            "description":"The provider your trying to insert already exists"  
+                    },
+                    "500": {
+                         "description": "There was an error on the creation of the provider"
+                    }
+                }
+
+            }
+            
+           
+        },
+        "/dataproviders/{dataProviderId}":{
+            "get":{
+                "tags":["Dataproviders"],
+                "summary": "Gets One Data Provider By ID",
+                "description": "Returns the selected data provider.",
+                "produces":"application/json",
+                "parameters":[
+                    {
+                        "in":"path",
+                        "name":"dataProviderId",
+                        "description": "ID of dataprovider to return",
+                        "required": true,
+                        "type": "string"
+
+                    }
+                ],     
+                "responses": {
+
+                    "200":{
+                        "description":"Return the selected provider",
+                        "schema":{
+
+                            "$ref":"#/components/schemas/Provider"
+                        }
+                       
+                    },
+                    "400":{
+                        "description":"There is no provider with that id"
+                    },
+                    "500":{
+                        "description":"There was an error searching the provider"
+                    }
+
+                }
+            },
+            "put":{
+                "tags":["Dataproviders"],
+                "summary":"Updates the Selected data Provider",
+                "description":"Updates the data provider selected by Id to update",
+                "produces":"application/json",
+                "parameters":[
+                    {
+                        "in":"path",
+                        "name":"dataProviderId",
+                        "description":"provider ID to update",
+                        "schema":{
+                            "$ref":"#/components/schemas/Provider"
+                        }
+                        
+                    },
+                    {
+                        "in":"body",
+                        "name":"urlName",
+                        "description":"provider Name"
+                        
+                        
+                    },
+                    {
+                        "in":"body",
+                        "name":"urlDescription",
+                        "description":"Provider description",
+                        "schema":{
+                            "$ref":"#/components/schemas/Provider"
+                        }
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Successful Operation"
+                        
+                    },
+                    "500":{
+                        "description":"There was an error updating the selected provider"
+                    }
+                }
+            },
+            "delete":{
+                "tags":["Dataproviders"],
+                "summary":"Delete a Data Provider",
+                "description":"Delete the selected data provider",
+                "parameters":[{
+                    "in":"path",
+                    "name":"dataProviderId",
+                    "description":"Data Provider Id",
+                    "require":true,
+                    "type":"string"
+                }],
+                "responses":{
+                    "200":{
+                        "description":"Successful Operation"
+                    },
+                    "400":{
+                        "description":"Provider not found"
+                    },
+                    "500":{
+                     "description":"There was an error deleting the selected provider"   
+                    }
+                }
+            }
+
+                
+        },
+        "/dataproviders/load/":{
+
+            "get":{
+                "tags":["Thesis"],
+                "summary": "Gets Thesis from All Providers",
+                "description": "Loads into database all thesis that exist in all data providers",
+                "produces":"application/json",
+                "responses":{
+                    "200":{
+                        "description":"Successful Operation",
+                       "schema":{
+                        "$ref":"#/components/schemas/Thesis"
+                        }
+                 
+                    },
+                    "500":{
+                        "description":"Error loading all providers"
+                    }
+                    
+                }
+
+                
+            }
+
+        },
+        "/dataproviders/{dataProviderId}/load":{
+
+            "get":{
+                "tags":["Dataproviders"],
+                "summary":"Load Thesis from one provider",
+                "description":"Load thesis from one selected provider",
+                "produces":"application/json",
+                "parameters":[{
+                    "in":"path",
+                    "name":"dataProviderId",
+                    "description":"Data Provider Id",
+                    "require":true,
+                    "type":"string"
+                }],
+                "responses":{
+                 "200":{
+                    "description":"Successful Operation",
+                    "schema":{
+                        "$ref":"#/components/schemas/Thesis"
+                    }
+                 }
+                
+                }
+                
+            }
+
+        },
+        "/thesis":{
+            "get":{
+                "tags":[
+                    "Thesis"
+                ],
+                "summary":"Gets All Thesis",
+                "description":"Gets all Thesis from database",
+                "produces":"application/json",
+                "parameters":[
+                    {
+                        "in":"query",
+                        "name":"skip",
+                        "schema":{
+                            "type": "integer",
+                             "minimum": 0,
+                             "default": 0
+                        },
+                        "required":false,
+                        "description":"The number of items to skip before starting to collect the result set"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100,
+                          "default": 20
+                        },
+                        "required": false,
+                        "description": "The number of items to return."
+                      },      
+                    {
+                        "in":"query",
+                        "name":"sort",
+                        "schema":{
+                            "type": "string",
+                            "default": "null"
+                        },
+                        "required":false,
+                        "description":"The name of the fields to sort data"
+                    },
+                    {
+                        "in": "query",
+                        "name": "fields",
+                        "description": "It lets you filtering the Thesis by fields (field1, field2, ...)",
+                        "type": "string"
+                      }
+                ],
+                    "responses":{
+                 
+                    "200":{
+                        "description":"Successful Operation",
+                        "schema":{
+                            "$ref":"#/components/schemas/Provider"
+                        }
+                        
+                    },  
+                    "500":{
+                        "description":"There was an error listing all thesis"
+                    }
+                }
+            }
+
+        },
+        "/these/{thesisId}":{
+            "get":{
+                "tags":[
+                    "Thesis"
+                ],
+                "summary":"Gets One Thesis by id",
+                "description":"Gets the selected thesis from the database",
+                "produces":"application/json",
+                "parameters":[{
+                    "in":"path",
+                    "name":"thesisId",
+                    "description":"Thesis Id",
+                    "require":true,
+                    "type":"string"
+                }],
+                "responses":{
+                    "200":{
+                        "description":"Successful Operation",
+                        "schema":{
+                            "$ref":"#/components/schemas/Thesis"
+                        }
+                        
+                    },
+                    "400":{
+                        "description":"There is no thesis with that id"
+                    },
+                    "500":{
+                        "description":"There was an error finding the selected thesis"
+                    }
+                }
+            },
+            "delete":{
+                "tags":["Thesis"],
+                "summary":"Delete a Thesis",
+                "description":"Delete the selected thesis from the repository",
+                "parameters":[{
+                    "in":"path",
+                    "name":"thesisId",
+                    "description":"Thesis Id",
+                    "require":true,
+                    "type":"string"
+                }],
+                "responses":{
+                    "200":{
+                        "description":"Successful Operation"
+                    },
+                    "400":{
+                        "description":"The thesis was found"
+                    },
+                    "500":{
+                     "description":"There was an error deleting the selected thesis"   
+                    }
+                }
+            }            
+        },
+        "/logs":{
+            "get": {
+                "tags":["Logs"],
+                "summary": "Gets All logs",
+                "description": "Returns a list of all all logs in database.",
+                "produces":"application/json",
+                "parameters":[
+                    {
+                        "in":"query",
+                        "name":"skip",
+                        "schema":{
+                            "type": "integer",
+                             "minimum": 0,
+                             "default": 0
+                        },
+                        "required":false,
+                        "description":"The number of items to skip before starting to collect the result set"
+                    },
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100,
+                          "default": 20
+                        },
+                        "required": false,
+                        "description": "The number of items to return."
+                      },      
+                    {
+                        "in":"query",
+                        "name":"sort",
+                        "schema":{
+                            "type": "string",
+                            "default": "null"
+                        },
+                        "required":false,
+                        "description":"The name of the fields to sort data"
+                    },
+                    {
+                        "in": "query",
+                        "name": "fields",
+                        "description": "It lets you filtering the logs by fields (field1, field2, ...)",
+                        "type": "string"
+                      }
+                    
+            ],
+                "responses": {
+                    "200": {
+                        "description":"Successful Operation",                        
+                        "schema": {
+                           "$ref":"#/components/schemas/Logs"
+                    }
+                },
+                    "500":{
+                        "description":"There was an error listing all logs from the server"
+                    }
+                }
+            }
+        }
+           
+    },
+    "components":{
+        "schemas":{
+            "Provider":{
+                "properties": {
+                    "urlName": {
+                        "type": "string"
+                    },
+                    "urlDescription": {
+                        "type": "string"
+                    },
+                    "created_date": {
+                        "type": "string"
+                    },
+                    "updated_date":{
+                        "type":"string"
+                    }
+                   
+                }
+
+            },
+            "Thesis":{
+                "properties":{
+                    "thesisTitle": {
+                        "type": "string"
+                     },
+                 
+                     "thesisCreator":[{
+                         "type":"string"
+                     }],
+                 
+                     "thesisSubject":[{
+                         "type": "string"
+                     }],
+                 
+                     "thesisDescription":{
+                         "type":"string"
+                     },
+                 
+                     "thesisDate":{
+                     "type": "string"
+                     },
+                 
+                     "thesisType":{
+                         "type": "string"
+                     },
+                 
+                     "thesisFormat":{
+                         "type": "string"
+                     },
+                     "thesisIdentifier":[{
+                         "type": "string"
+                     }],
+                 
+                     "thesisLanguage":{
+                         "type": "string"
+                     },
+                 
+                    "thesisRights":{
+                         "type": "string"
+                     }
+                 
+                   
+                }
+
+            },
+            "Logs":{
+
+                "systemLogURL": {
+                    "type": "string"
+                 },
+             
+                 "systemLogUrlDescription":{
+                     "type":"string"
+                 },
+                 "systemLogStartOperationDate":{
+                 "type":"string"
+                 },
+             
+                 "systemLogEndtOperationDate":{
+                     "type":"string"
+                 },
+             
+                 "systemLogNumberOfOperations":{
+                     "type": "string"
+                 }
+
+            }
+        }
+
+    }
+            
+}
